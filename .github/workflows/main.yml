@@ -1,0 +1,57 @@
+name: Docker build and push
+ 
+on:
+  push:
+    branches:
+    - master 
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron:  '0 0 * * 2'
+
+jobs:
+  docker_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        versions: [
+          { distribution: 'ubuntu', version: 'xenial', base: 'buildpack-deps:xenial-curl' },
+          { distribution: 'ubuntu', version: 'bionic', base: 'buildpack-deps:bionic-curl' },
+          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' },
+          { distribution: 'alpine', version: '3', base: 'alpine:3' }
+        ]
+    steps:
+    - uses: actions/checkout@master
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
+    - name: "Build  ${{ matrix.versions.distribution }}: ${{ matrix.versions.version }}"
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
+      run: |
+        CUR=$(pwd) && \
+        cd ${{ matrix.versions.distribution }} && \
+        IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
+        docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
+        cd ${CUR}
+
+  docker_push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        versions: [
+          { distribution: 'ubuntu', version: 'xenial', base: 'buildpack-deps:xenial-curl' },
+          { distribution: 'ubuntu', version: 'bionic', base: 'buildpack-deps:bionic-curl' },
+          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' },
+          { distribution: 'alpine', version: '3', base: 'alpine:3' }
+        ]
+    steps:
+    - uses: actions/checkout@master
+      if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
+    - name: Build ${{ matrix.dir_tag.tag }} and push
+      if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
+        CUR=$(pwd) && \
+        cd ${{ matrix.versions.distribution }} && \
+        IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
+        docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
+        docker push ${IMAGRE_NAME} && \
