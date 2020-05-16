@@ -55,3 +55,4 @@ jobs:
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
         docker push ${IMAGRE_NAME} && \
+        cd ${CUR}
