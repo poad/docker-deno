@@ -13,5 +13,3 @@ Docker image for [Deno](https://deno.land).
 | ubuntu-xenial  | Ubuntu 16.04 (Xenial) |
 | ubuntu-bionic  | Ubuntu 18.04 (Bionic) |
 | ubuntu-focal   | Ubuntu 20.04 (Focal)  |
-| alpine-3       | AlpineLinux 3.x       |
-
