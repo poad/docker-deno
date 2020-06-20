@@ -16,4 +16,8 @@ RUN groupadd -g 1000 deno \
 
 USER deno
 
-RUN /tmp/install.sh
+ENV PATH="${HOME}/.deno/bin/deno:${PATH}"
+
+RUN /tmp/install.sh \
+ && rm -rf /tmp/*
+
