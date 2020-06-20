@@ -30,6 +30,10 @@ jobs:
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
         cd ${CUR}
+    - name: test
+      run: |
+        IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
+        docker run --rm -it ${IMAGRE_NAME} deno --version
 
   docker_push:
     runs-on: ubuntu-latest
