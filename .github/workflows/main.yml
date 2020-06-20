@@ -18,8 +18,7 @@ jobs:
         versions: [
           { distribution: 'ubuntu', version: 'xenial', base: 'buildpack-deps:xenial-curl' },
           { distribution: 'ubuntu', version: 'bionic', base: 'buildpack-deps:bionic-curl' },
-          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' },
-          { distribution: 'alpine', version: '3', base: 'alpine:3' }
+          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' }
         ]
     steps:
     - uses: actions/checkout@master
@@ -28,7 +27,6 @@ jobs:
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
       run: |
         CUR=$(pwd) && \
-        cd ${{ matrix.versions.distribution }} && \
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
         cd ${CUR}
@@ -40,8 +38,7 @@ jobs:
         versions: [
           { distribution: 'ubuntu', version: 'xenial', base: 'buildpack-deps:xenial-curl' },
           { distribution: 'ubuntu', version: 'bionic', base: 'buildpack-deps:bionic-curl' },
-          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' },
-          { distribution: 'alpine', version: '3', base: 'alpine:3' }
+          { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' }
         ]
     steps:
     - uses: actions/checkout@master
@@ -51,7 +48,6 @@ jobs:
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
         CUR=$(pwd) && \
-        cd ${{ matrix.versions.distribution }} && \
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
         docker push ${IMAGRE_NAME} && \
