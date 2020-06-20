@@ -31,9 +31,10 @@ jobs:
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
         cd ${CUR}
     - name: test
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
       run: |
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
-        docker run --rm -it ${IMAGRE_NAME} deno --version
+        docker run --rm -t ${IMAGRE_NAME} deno --version
 
   docker_push:
     runs-on: ubuntu-latest
@@ -47,12 +48,21 @@ jobs:
     steps:
     - uses: actions/checkout@master
       if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
-    - name: Build ${{ matrix.dir_tag.tag }} and push
+    - name: Build ${{ matrix.dir_tag.tag }}
       if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
       run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
         CUR=$(pwd) && \
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker build --build-arg BASE_IMAGE=${{ matrix.versions.base }} -t ${IMAGRE_NAME} . && \
-        docker push ${IMAGRE_NAME} && \
         cd ${CUR}
+    - name: test
+      if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
+      run: |
+        IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
+        docker run --rm -t ${IMAGRE_NAME} deno --version
+    - name: Push ${{ matrix.dir_tag.tag }}
+      if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
+        IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
+        docker push ${IMAGRE_NAME}
