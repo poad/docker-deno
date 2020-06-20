@@ -18,6 +18,10 @@ USER deno
 
 ENV PATH="${HOME}/.deno/bin/deno:${PATH}"
 
-RUN /tmp/install.sh \
- && rm -rf /tmp/*
+RUN /tmp/install.sh
 
+USER root
+
+RUN rm -rf /tmp/*
+
+USER deno
