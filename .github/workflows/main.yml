@@ -35,7 +35,9 @@ jobs:
       run: |
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker run --rm -t ${IMAGRE_NAME} deno --version
-
+    - name: Hadolint
+      uses: brpaz/hadolint-action@master
+  
   docker_push:
     runs-on: ubuntu-latest
     strategy:
