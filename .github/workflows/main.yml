@@ -36,6 +36,7 @@ jobs:
         IMAGRE_NAME=poad/docker-deno:${{ matrix.versions.distribution }}-${{ matrix.versions.version }} && \
         docker run --rm -t ${IMAGRE_NAME} deno --version
     - name: Hadolint
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
       uses: brpaz/hadolint-action@master
   
   docker_push:
