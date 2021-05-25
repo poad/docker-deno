@@ -21,7 +21,7 @@ jobs:
           { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' }
         ]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
     - name: "Build  ${{ matrix.versions.distribution }}: ${{ matrix.versions.version }}"
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
@@ -37,7 +37,7 @@ jobs:
         docker run --rm -t ${IMAGRE_NAME} deno --version
     - name: Hadolint
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
-      uses: brpaz/hadolint-action@master
+      uses: brpaz/hadolint-action@v1.5.0
   
   docker_push:
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
           { distribution: 'ubuntu', version: 'focal', base: 'buildpack-deps:focal-curl' }
         ]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
     - name: Build ${{ matrix.dir_tag.tag }}
       if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
